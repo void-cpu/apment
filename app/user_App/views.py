@@ -1,6 +1,7 @@
 import random
 
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
@@ -97,7 +98,7 @@ class UserViewSets(ModelViewSet):
             return Response(BaseResponse(Message=ResponseMessage.NoteFound.value).__str__(),
                             status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=["get", "set"], detail=True)
+    @action(methods=["get", "post"], detail=True)
     def PhoneCode(self, request, pk=None):
         """
         get:得到手机验证码 request {"Phone": Phone}
@@ -109,17 +110,20 @@ class UserViewSets(ModelViewSet):
                 return Response(BaseResponse(Message=ResponseMessage.NullMessage.value).__str__(),
                                 status=status.HTTP_401_UNAUTHORIZED)
             else:
-                return Response(BaseResponse(Phone=Phone, Message=random.randint(1000, 9999)),
+                code = random.randint(10000, 999999)
+                print(code)
+                cache.set(Phone, code, 60)
+                return Response(BaseResponse(Phone=Phone, Message="successfully").__str__(),
                                 status=status.HTTP_200_OK)
         elif request.method == "POST":
             Phone = request.data.get('Phone')
-            PhoneCode_01 = request.data.get("PhoneCode_01")
-            PhoneCode_02 = request.data.get("PhoneCode_02")
-            if self.is_value_json(Phone, PhoneCode_02, PhoneCode_01):
+            PhoneCode = request.data.get("PhoneCode")
+            if self.is_value_json(Phone, PhoneCode):
                 return Response(BaseResponse(Message=ResponseMessage.NullMessage.value).__str__(),
                                 status=status.HTTP_401_UNAUTHORIZED)
             else:
+                PhoneodeRedis = str(cache.get(Phone)) if cache.has_key(Phone) else str(None)
                 return Response(BaseResponse(
-                    Message=ResponseMessage.Code(is_True=self.is_same_code(code_02=PhoneCode_01, code_01=PhoneCode_02)),
-                    Phone=Phone),
+                    Message=ResponseMessage.Code(is_True=self.is_same_code(code_02=str(PhoneCode), code_01=PhoneodeRedis.__str__())).__str__(),
+                    Phone=Phone).__str__(),
                     status=status.HTTP_401_UNAUTHORIZED)
