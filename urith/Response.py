@@ -6,7 +6,7 @@
 
 
 class BaseResponse:
-    def __init__(self, Message, Phone=None):
+    def __init__(self, Message, Phone=str(None)):
         self.Message = Message
         self.Phone = Phone
 
