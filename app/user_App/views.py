@@ -18,7 +18,9 @@ class UserViewSets(ModelViewSet):
     serializer_class = UserListSerializers
     pagination_class = BasePagination
     filter_backends = [DjangoFilterBackend]
-    filter_fields = ("UserName", "phone")
+    filter_fields = {"UserName": ["exact", "in", "contains"], "phone": ["exact", "contains"]}
+
+    # {"UserName": ['exact', 'lt', 'gt', "in", "contains"], "phone": ['exact', 'lt', 'gt', "in", "contains"]}
 
     def create(self, request, *args, **kwargs):
         password = request.data['UserPwd'] if 'UserPwd' in request.data else None
@@ -56,7 +58,7 @@ class UserViewSets(ModelViewSet):
                                 status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(BaseResponse(Message=ResponseMessage.Code(is_True=False), Phone=phone),
-                               status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_401_UNAUTHORIZED)
 
     @staticmethod
     def is_value_json(*args):
