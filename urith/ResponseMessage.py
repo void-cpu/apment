@@ -9,7 +9,8 @@ from enum import Enum
 class ResponseMessage(Enum):
     NullMessage = '参数不完整'  # 前端传递的参数不完整
     NoteFound = '查找信息不存在不存在'  # 用户不存在/查找信息不存在
-
+    
+    @staticmethod
     class Code:
         CodeError = "验证错误"
         CodeSuccessful = "验证成功"
