@@ -6,12 +6,12 @@
 
 
 class BaseResponse:
-    def __init__(self, Message, Phone=None):
+    def __init__(self, Message, Phone=str("")):
         self.Message = Message
         self.Phone = Phone
 
     def __str__(self):
-        if len(self.Phone) == 0:
+        if len(self.Phone) == 0 or self.Phone is None:
             return dict({'Message': self.Message})
         elif len(self.Phone) > 0:
             return dict({'Message': self.Message, "phone": self.Phone})

@@ -9,6 +9,8 @@ from enum import Enum
 class ResponseMessage(Enum):
     NullMessage = '参数不完整'  # 前端传递的参数不完整
     NoteFound = '查找信息不存在不存在'  # 用户不存在/查找信息不存在
+    PassWordErrorMessage = "两次输入的密码不同，请重新核对信息"
+    PassWordError = "用户密码错误,请重新输入"
     
     @staticmethod
     class Code:
